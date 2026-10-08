@@ -1,0 +1,106 @@
+---
+// index.astro
+import Layout from '../layouts/Layout.astro';
+import Hero from '../components/Hero.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import TechStack from '../components/TechStack.astro';
+import AboutSection from '../components/AboutSection.astro';
+import ContactSection from '../components/ContactSection.astro';
+import Footer from '../components/Footer.astro';
+
+const projects = [
+  {
+    title: "cfnew 面板",
+    desc: "Cloudflare Workers / Pages 订阅转换面板，支持多协议订阅合流转换、节点过滤与全自动化更新部署。",
+    url: "https://github.com/b1000mk/my-cfnew",
+    tags: ["Cloudflare Workers", "Pages", "Edge", "CI/CD"],
+    icon: "⚡",
+    badge: "Core Project"
+  },
+  {
+    title: "my-homepage",
+    desc: "基于 Astro 5 现代前端工程重构的个人主页与技术展示集，全静态零 JS 开销与极致流光毛玻璃视觉体验。",
+    url: "https://github.com/b1000mk/my-homepage",
+    tags: ["Astro", "Modern CSS", "Cloudflare Pages"],
+    icon: "🪐",
+    badge: "New Release"
+  },
+  {
+    title: "GithubCK",
+    desc: "我的第一个 GitHub 仓库，记录 Git 核心架构思想、团队协作工作流笔记与日常提效自动化小工具集。",
+    url: "https://github.com/b1000mk/GithubCK",
+    tags: ["Git", "Shell", "Dev Tools", "Learning"],
+    icon: "📦",
+    badge: "First Repo"
+  }
+];
+---
+
+<Layout title="b1000mk · 个人主页与开源探索" description="b1000mk 的现代极简个人主页。探索边缘计算、Cloudflare 全球网络、自动化工作流与高性能 Web 体验。">
+  <Hero />
+
+  <section class="projects-section animate-fade-up delay-1" id="projects">
+    <div class="section-header">
+      <h2 class="section-title">开源与代表作品</h2>
+      <p class="section-subtitle">从实际需求出发，精雕细琢的实用工具与探索项目</p>
+    </div>
+
+    <div class="projects-grid">
+      {projects.map((proj) => (
+        <ProjectCard 
+          title={proj.title}
+          desc={proj.desc}
+          url={proj.url}
+          tags={proj.tags}
+          icon={proj.icon}
+          badge={proj.badge}
+        />
+      ))}
+    </div>
+  </section>
+
+  <TechStack />
+
+  <AboutSection />
+
+  <ContactSection />
+
+  <Footer />
+</Layout>
+
+<style>
+  .projects-section {
+    margin-bottom: 56px;
+    scroll-margin-top: 80px;
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+
+  .section-title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--text-primary);
+  }
+
+  .section-subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  @media (max-width: 640px) {
+    .projects-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

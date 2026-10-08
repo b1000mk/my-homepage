@@ -1,0 +1,90 @@
+---
+// AboutSection.astro
+const philosophies = [
+  {
+    icon: "🪐",
+    title: "极简纯粹主义",
+    desc: "坚持 Apple 与 Linear 式的排版留白与高质感细节，去除一切繁杂噪音，回归内容本身。"
+  },
+  {
+    icon: "⚡",
+    title: "边缘优先架构",
+    desc: "拥抱 Serverless 与全球 CDN 边缘节点，极致追求毫秒级首屏加载与无感访问体验。"
+  },
+  {
+    icon: "🛠️",
+    title: "自动化与 GitOps",
+    desc: "以 Git 为唯一可信源，通过 CI/CD 与自动化工作流让代码从提交到全球部署如丝般顺滑。"
+  }
+];
+---
+
+<section class="about-section animate-fade-up delay-2" id="about">
+  <div class="section-header">
+    <h2 class="section-title">设计与构建哲学</h2>
+    <p class="section-subtitle">少即是多，追求兼具美感与性能的代码工程</p>
+  </div>
+
+  <div class="philosophy-grid">
+    {philosophies.map((item) => (
+      <div class="philo-card glass-panel spotlight-card">
+        <div class="philo-icon">{item.icon}</div>
+        <h3 class="philo-title">{item.title}</h3>
+        <p class="philo-desc">{item.desc}</p>
+      </div>
+    ))}
+  </div>
+</section>
+
+<style>
+  .about-section {
+    margin-bottom: 56px;
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .section-title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--text-primary);
+  }
+
+  .section-subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  .philosophy-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+  }
+
+  .philo-card {
+    padding: 24px 20px;
+    border-radius: var(--radius-lg);
+  }
+
+  .philo-icon {
+    font-size: 28px;
+    margin-bottom: 14px;
+  }
+
+  .philo-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+  }
+
+  .philo-desc {
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+  }
+</style>

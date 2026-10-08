@@ -1,0 +1,172 @@
+---
+// Hero.astro
+---
+
+<header class="hero-section animate-fade-up">
+  <div class="status-pill-wrapper">
+    <div class="badge">
+      <span class="badge-dot"></span>
+      <span>持续探索与构建中 · Edge & Automation</span>
+    </div>
+  </div>
+
+  <div class="avatar-container">
+    <div class="avatar-glow"></div>
+    <div class="avatar-inner" aria-label="b1000mk 头像">
+      <span class="avatar-letter">B</span>
+    </div>
+  </div>
+
+  <h1 class="hero-name">
+    <span class="gradient-text">b1000mk</span>
+  </h1>
+
+  <p class="hero-tagline">
+    “路漫漫其修远，吾将上下而求索”
+  </p>
+
+  <p class="hero-bio">
+    专注于边缘计算、Cloudflare 全球网络、自动化流程与极简高美感 Web 界面设计。
+  </p>
+
+  <div class="hero-cta-group">
+    <a href="#projects" class="btn-primary">
+      <span>浏览作品</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <polyline points="19 12 12 19 5 12"></polyline>
+      </svg>
+    </a>
+    
+    <a href="https://github.com/b1000mk" target="_blank" rel="noopener noreferrer" class="btn-secondary">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"></path>
+      </svg>
+      <span>GitHub 主页</span>
+    </a>
+
+    <button id="quick-copy-btn" class="btn-secondary copy-btn" type="button" data-text="https://github.com/b1000mk" title="复制主页链接">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+      </svg>
+      <span>分享名片</span>
+    </button>
+  </div>
+</header>
+
+<style>
+  .hero-section {
+    text-align: center;
+    padding: 60px 0 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .status-pill-wrapper {
+    margin-bottom: 28px;
+  }
+
+  .avatar-container {
+    position: relative;
+    width: 108px;
+    height: 108px;
+    margin-bottom: 24px;
+    cursor: pointer;
+  }
+
+  .avatar-glow {
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    background: var(--gradient-accent);
+    opacity: 0.45;
+    filter: blur(14px);
+    transition: all 0.4s ease;
+  }
+
+  .avatar-container:hover .avatar-glow {
+    opacity: 0.8;
+    filter: blur(20px);
+    transform: scale(1.08);
+  }
+
+  .avatar-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #1e293b, #0f172a);
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  :root:not([data-theme="dark"]) .avatar-inner {
+    background: linear-gradient(145deg, #0f172a, #1e293b);
+  }
+
+  .avatar-container:hover .avatar-inner {
+    transform: translateY(-2px) scale(1.04);
+  }
+
+  .avatar-letter {
+    font-size: 50px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -0.04em;
+    user-select: none;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  }
+
+  .hero-name {
+    font-size: clamp(42px, 7vw, 56px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 12px;
+  }
+
+  .hero-tagline {
+    font-size: clamp(18px, 3vw, 22px);
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+    letter-spacing: 0.02em;
+  }
+
+  .hero-bio {
+    max-width: 520px;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text-muted);
+    margin: 0 auto 32px;
+  }
+
+  .hero-cta-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .copy-btn {
+    border: 1px dashed var(--border-subtle);
+  }
+
+  @media (max-width: 600px) {
+    .hero-section {
+      padding: 40px 0 36px;
+    }
+    .hero-cta-group {
+      width: 100%;
+    }
+    .hero-cta-group > * {
+      flex: 1 1 auto;
+    }
+  }
+</style>

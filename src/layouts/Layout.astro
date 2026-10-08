@@ -1,0 +1,144 @@
+---
+// Layout.astro
+import '../styles/global.css';
+import ThemeToggle from '../components/ThemeToggle.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "b1000mk · 个人主页",
+  description = "b1000mk 的个人主页与作品集。专注边缘计算、Cloudflare Pages/Workers、自动化工作流与现代极简 Web 体验。"
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    
+    <!-- Open Graph / SEO -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+
+    <!-- 图标 -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+
+    <!-- 解决暗色模式闪烁 (FOUC) 的内联脚本 -->
+    <script is:inline>
+      (function() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+          document.documentElement.setAttribute('data-theme', savedTheme);
+        } else {
+          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          const defaultTheme = prefersDark ? 'dark' : 'light';
+          document.documentElement.setAttribute('data-theme', defaultTheme);
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <!-- 背景流光装饰 -->
+    <div class="bg-decorations" aria-hidden="true">
+      <div class="bg-grid-pattern"></div>
+      <div class="orb-1"></div>
+      <div class="orb-2"></div>
+      <div class="orb-3"></div>
+    </div>
+
+    <!-- 顶部固定高斯模糊导航 -->
+    <header class="page-container">
+      <nav class="top-nav" aria-label="主导航">
+        <a href="/" class="brand-link" aria-label="返回首页">
+          <div class="brand-logo-mini">B</div>
+          <span>b1000mk</span>
+        </a>
+
+        <div class="nav-actions">
+          <ThemeToggle />
+        </div>
+      </nav>
+    </header>
+
+    <!-- 主体内容 -->
+    <main class="page-container">
+      <slot />
+    </main>
+
+    <!-- 全局 Toast 提示容器 -->
+    <div id="toast" role="alert" aria-live="polite">
+      <span class="toast-icon">✓</span>
+      <span id="toast-message">已复制到剪贴板</span>
+    </div>
+
+    <!-- 全局卡片聚光灯跟随与快捷复制逻辑 -->
+    <script is:inline>
+      function initInteractiveEffects() {
+        // 卡片聚光灯光效
+        const cards = document.querySelectorAll('.spotlight-card');
+        cards.forEach(card => {
+          card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            card.style.setProperty('--mouse-x', `${x}px`);
+            card.style.setProperty('--mouse-y', `${y}px`);
+          });
+        });
+
+        // 统一复制按钮处理与 Toast 提示
+        const copyButtons = document.querySelectorAll('.copy-btn');
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toast-message');
+
+        function showToast(msg) {
+          if (!toast || !toastMessage) return;
+          toastMessage.textContent = msg;
+          toast.classList.add('show');
+          setTimeout(() => {
+            toast.classList.remove('show');
+          }, 2400);
+        }
+
+        copyButtons.forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const textToCopy = btn.getAttribute('data-text') || window.location.href;
+            try {
+              if (navigator.clipboard && window.isSecureContext) {
+                await navigator.clipboard.writeText(textToCopy);
+              } else {
+                const textarea = document.createElement('textarea');
+                textarea.value = textToCopy;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+              }
+              showToast('已成功复制链接到剪贴板！');
+            } catch (err) {
+              showToast('复制失败，请手动长按复制');
+            }
+          });
+        });
+      }
+
+      initInteractiveEffects();
+      document.addEventListener('astro:after-swap', initInteractiveEffects);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,140 @@
+---
+// Footer.astro
+---
+
+<footer class="site-footer animate-fade-up delay-4">
+  <div class="footer-top">
+    <div class="footer-badge">
+      <span class="live-dot"></span>
+      <span>Cloudflare Pages 全球边缘运行中</span>
+    </div>
+
+    <button id="back-to-top" class="back-to-top-btn" type="button" aria-label="返回顶部">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="19" x2="12" y2="5"></line>
+        <polyline points="5 12 12 5 19 12"></polyline>
+      </svg>
+      <span>返回顶部</span>
+    </button>
+  </div>
+
+  <div class="footer-divider"></div>
+
+  <div class="footer-bottom">
+    <div class="copyright">
+      © {new Date().getFullYear()} <strong>b1000mk</strong> · 基于 Astro 精心构建
+    </div>
+    <div class="footer-links">
+      <a href="https://github.com/b1000mk" target="_blank" rel="noopener noreferrer">GitHub</a>
+      <span class="sep">·</span>
+      <a href="https://pages.cloudflare.com/" target="_blank" rel="noopener noreferrer">Cloudflare Pages</a>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    padding: 32px 0 48px;
+    margin-top: 40px;
+  }
+
+  .footer-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .footer-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+  }
+
+  .live-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 8px #10b981;
+  }
+
+  .back-to-top-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    padding: 6px 14px;
+    border-radius: var(--radius-full);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .back-to-top-btn:hover {
+    background: var(--bg-surface-hover);
+    border-color: var(--border-hover);
+    color: var(--accent-primary);
+    transform: translateY(-2px);
+  }
+
+  .footer-divider {
+    height: 1px;
+    background: var(--border-subtle);
+    margin-bottom: 20px;
+  }
+
+  .footer-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--text-muted);
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .copyright strong {
+    color: var(--text-secondary);
+  }
+
+  .footer-links {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .footer-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .footer-links a:hover {
+    color: var(--accent-primary);
+  }
+
+  .sep {
+    opacity: 0.5;
+  }
+</style>
+
+<script is:inline>
+  function setupBackToTop() {
+    const btn = document.getElementById('back-to-top');
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+  setupBackToTop();
+  document.addEventListener('astro:after-swap', setupBackToTop);
+</script>
