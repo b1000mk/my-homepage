@@ -1,19 +1,19 @@
 # my-homepage
 
-b1000mk 的现代极简个人主页与作品集，基于 **Astro 5** 重构构建。
+b1000mk 的个人主页与开源作品集，基于 **Astro 5** 构建的极简编辑排版风单页。
 
-结合 Apple 与 Linear 极简科技美学，具备原生深/浅色模式切换、流光环境光效、交互聚光灯卡片与毫秒级全静态极速交付。
+石墨深色主题、超大标题排版与编号分节结构，无任何客户端框架。
 
 ---
 
 ## ✨ 特性亮点
 
-- ⚡ **Astro 5 核心驱动**：全静态生成（SSG），零客户端运行时多余开销，秒级首屏加载。
-- 🌓 **深浅双色主题**：内置无闪烁（Anti-FOUC）主题切换器，支持记住用户偏好与系统偏好自动同步。
-- 🎨 **高级视觉质感**：动态 Ambient 流光微动效、点阵背景纹理、高斯毛玻璃面板（Glassmorphism）与卡片鼠标光斑跟随。
+- ⚡ **Astro 5 核心驱动**：全静态生成（SSG），零客户端框架，秒级首屏加载。
+- 🖋 **极简编辑排版**：128px 超大标题 + 编号分节（01 项目 / 02 工具 / 03 理念 / 04 联系），专注内容本身。
+- 🌑 **石墨深色主题**：固定深色配色（石墨 `#18181B` + 亮蓝 `#60A5FA` 点缀），Space Grotesk 与 DM Sans 双字体组合。
 - 📱 **全终端响应式**：针对移动端、平板与桌面端精细调校的排版与交互体验。
 - 🔍 **SEO 与元数据优化**：完备的 OpenGraph、Twitter 卡片与语义化 HTML5 标签。
-- 📋 **交互微细节**：一键复制主页与联系方式 Toast 气泡提醒、平滑返回顶部。
+- 📋 **交互微细节**：一键复制主页链接（约 40 行原生 JS，带成功状态反馈）。
 
 ---
 
@@ -53,23 +53,16 @@ npm run preview
 ## 📁 目录结构
 
 ```text
-├── public/                 # 静态静态资源 (favicon, 图标等)
+├── public/                 # 静态资源 (favicon 等)
 ├── src/
-│   ├── components/         # 模块化 Astro 组件
-│   │   ├── AboutSection.astro    # 哲学与简介
-│   │   ├── ContactSection.astro  # 联系与社交卡片
-│   │   ├── Footer.astro          # 页脚与返回顶部
-│   │   ├── Hero.astro            # 头部 Hero 区域与头像
-│   │   ├── ProjectCard.astro     # 聚光灯开源项目卡片
-│   │   ├── TechStack.astro       # 技术与工具栈徽章
-│   │   └── ThemeToggle.astro     # 深浅色模式切换器
 │   ├── layouts/
-│   │   └── Layout.astro          # 基础 HTML 布局与全局交互逻辑
+│   │   └── Layout.astro          # 基础 HTML 布局、SEO 元数据与字体加载
 │   ├── styles/
-│   │   └── global.css            # 现代设计系统、色彩变量与动效
+│   │   └── global.css            # 设计系统：色彩变量、排版与响应式
 │   └── pages/
-│       └── index.astro           # 主页入口页面
+│       └── index.astro           # 主页入口：全部内容与复制链接微交互
 ├── astro.config.mjs        # Astro 配置文件
 ├── package.json            # 依赖与脚本
-└── tsconfig.json           # TypeScript 配置
+├── tsconfig.json           # TypeScript 配置
+└── wrangler.toml           # Cloudflare Pages 构建输出配置
 ```
