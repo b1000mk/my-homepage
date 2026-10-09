@@ -388,3 +388,21 @@ body {
     font-size: 42px;
   }
 }
+
+/* ---------- 站点信息 ---------- */
+
+.site-info {
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--muted-foreground);
+}
+
+.site-info p {
+  margin: 0;
+}

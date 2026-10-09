@@ -136,6 +136,11 @@ const principles = [
         </div>
       </div>
       <p id="copy-status" class="copy-status" aria-live="polite"></p>
+      <div class="site-info">
+        <p id="info-server" hidden></p>
+        <p id="info-visitor">正在检测您的网络信息……</p>
+        <p>本站已稳定运行 <span id="info-uptime">……</span></p>
+      </div>
     </footer>
   </div>
 
@@ -165,6 +170,63 @@ const principles = [
           }
         );
       });
+    })();
+  </script>
+
+  <script is:inline>
+    (function () {
+      // 站点稳定运行的起始时间（如需调整只改这里）
+      var START = new Date('2023-05-13T02:36:00+08:00');
+      var up = document.getElementById('info-uptime');
+      var serverEl = document.getElementById('info-server');
+      var visitorEl = document.getElementById('info-visitor');
+
+      function flag(cc) {
+        cc = (cc || '').trim().toUpperCase();
+        if (!/^[A-Z]{2}$/.test(cc)) return '';
+        return String.fromCodePoint.apply(null, cc.split('').map(function (c) {
+          return 0x1f1e6 + c.charCodeAt(0) - 65;
+        }));
+      }
+
+      function tick() {
+        if (!up) return;
+        var diff = Math.max(0, Date.now() - START.getTime());
+        var d = Math.floor(diff / 86400000);
+        var h = Math.floor(diff / 3600000) % 24;
+        var m = Math.floor(diff / 60000) % 60;
+        var s = Math.floor(diff / 1000) % 60;
+        up.textContent = d + '天 ' + h + '小时 ' + m + '分 ' + s + '秒';
+      }
+      tick();
+      window.setInterval(tick, 1000);
+
+      var coloCities = {
+        HKG: 'Hong Kong', NRT: 'Tokyo', KIX: 'Osaka', ICN: 'Seoul', SIN: 'Singapore', TPE: 'Taipei',
+        LAX: 'Los Angeles', SJC: 'San Jose', SFO: 'San Francisco', SEA: 'Seattle', DFW: 'Dallas',
+        ORD: 'Chicago', IAD: 'Ashburn', JFK: 'New York', YYZ: 'Toronto', GRU: 'São Paulo',
+        FRA: 'Frankfurt', AMS: 'Amsterdam', LHR: 'London', CDG: 'Paris', MXP: 'Milan', MAD: 'Madrid'
+      };
+
+      // 服务器信息：Cloudflare 托管的域名自带 /cdn-cgi/trace
+      fetch('/cdn-cgi/trace').then(function (r) { return r.text(); }).then(function (text) {
+        var info = {};
+        text.trim().split('\n').forEach(function (line) {
+          var kv = line.split('=');
+          info[kv[0]] = kv.slice(1).join('=');
+        });
+        if (serverEl && info.ip) {
+          serverEl.textContent = '现在为您提供服务的服务器是 ' + flag(info.loc) + ' ' + (coloCities[info.colo] || info.colo || '') + '，IP: ' + info.ip + '，运营商: Cloudflare, Inc.';
+          serverEl.hidden = false;
+        }
+      }).catch(function () {});
+
+      // 访客信息
+      fetch('https://ipwho.is/').then(function (r) { return r.json(); }).then(function (data) {
+        if (!data || data.success === false || !data.ip || !visitorEl) return;
+        var isp = data.connection && data.connection.isp ? '，运营商: ' + data.connection.isp : '';
+        visitorEl.textContent = '您来自 ' + flag(data.country_code) + ' ' + (data.city || '') + '，IP: ' + data.ip + isp;
+      }).catch(function () {});
     })();
   </script>
 </Layout>
