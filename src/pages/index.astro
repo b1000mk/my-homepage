@@ -227,8 +227,8 @@ const principles = [
   <!-- Uptime + Network script -->
   <script is:inline>
     (function () {
-      // ★ 运行时间起点 — 当前时间往前推 5 天（精确到秒）
-      var START = new Date(Date.now() - 5 * 24 * 60 * 60 * 1000);
+      // ★ 运行时间起点 — 固定日期，随时间持续增长（如需修改只改这里）
+      var START = new Date('2026-10-04T12:30:00+08:00');
 
       var upEl      = document.getElementById('info-uptime');
       var serverEl  = document.getElementById('info-server');
