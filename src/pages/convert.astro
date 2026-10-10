@@ -1,855 +1,305 @@
 ---
-// convert.astro — 订阅转换工具
+// convert.astro
 import Layout from '../layouts/Layout.astro';
+
+const notes = [
+  { name: '本地处理', description: '解析与生成都在这个页面里完成，不会把订阅地址或节点内容发送到任何转换服务。' },
+  { name: '支持协议', description: 'Shadowsocks、VMess（新版链接与旧版 base64）、VLESS、Trojan、Hysteria2、TUIC，含 WS / gRPC / h2 / Reality 传输参数。' },
+  { name: '订阅地址读不到', description: '部分订阅地址不允许浏览器直接读取。遇到这种情况，请在浏览器打开该地址，把页面内容复制到文本框里再转换。' },
+  { name: '导出模板', description: '不同客户端版本的参数名会有差异，导入后请确认每个节点都能连通。' },
+  { name: '想要可分享链接', description: '这里生成的是配置内容。把它放到自己的 GitHub Gist 或 Cloudflare R2，就能得到一个可以随时导入的订阅地址。' },
+];
 ---
 
 <Layout
-  title="订阅转换 · b1000mk Tools"
-  description="在线订阅格式转换工具，支持 Clash Meta、Sing-box、V2Ray、Surge 等多种格式。"
+  title="订阅链接转换 · b1000mk"
+  description="在浏览器本地把订阅链接转换成 Clash、V2Ray、Surge、Quantumult X 可用的配置，支持 Shadowsocks、VMess、VLESS、Trojan、Hysteria2、TUIC。"
 >
   <div class="page">
-
-    <!-- Back nav -->
-    <nav class="topnav anim-fade-up">
-      <a href="/" class="back-link">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 5-7 7 7 7"/></svg>
-        返回主页
-      </a>
-      <span class="topnav-title">订阅转换</span>
-    </nav>
-
-    <!-- Hero -->
-    <header class="convert-hero anim-fade-up anim-delay-1">
-      <p class="eyebrow">Tools · 01</p>
-      <h1 class="convert-title">订阅转换</h1>
-      <p class="convert-desc">
-        将机场订阅链接转换为任意客户端所需格式<br/>
-        支持 Clash Meta · Sing-box · V2Ray · Surge · Quantumult X
-      </p>
+    <header class="hero">
+      <div class="hero-top">
+        <p class="eyebrow">b1000mk</p>
+        <nav class="site-nav" aria-label="主导航">
+          <a href="/">首页</a>
+          <a href="/convert" aria-current="page">订阅转换</a>
+        </nav>
+      </div>
+      <h1 class="page-title">订阅链接转换</h1>
+      <p class="hero-intro">粘贴订阅地址或订阅内容，选择目标客户端，立刻得到可以直接导入的配置。整个过程在浏览器本地完成，订阅内容不会离开这个页面。</p>
     </header>
 
-    <!-- Converter Card -->
-    <div class="converter-wrap anim-fade-up anim-delay-2">
-
-      <!-- Step 1: Input -->
-      <section class="conv-section">
-        <div class="conv-section-head">
-          <span class="conv-step">01</span>
-          <h2 class="conv-step-label">订阅链接</h2>
-          <span class="conv-badge">每行一个</span>
-        </div>
-        <textarea
-          id="sub-input"
-          class="sub-textarea"
-          placeholder="https://your-subscription-url.com/sub?token=xxx&#10;https://another-url.com/..."
-          rows="4"
-          spellcheck="false"
-          autocomplete="off"
-        ></textarea>
-        <div class="input-actions">
-          <button class="small-btn" id="btn-paste" type="button">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>
-            粘贴
-          </button>
-          <button class="small-btn danger" id="btn-clear" type="button">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-            清空
-          </button>
-        </div>
-      </section>
-
-      <!-- Step 2: Format -->
-      <section class="conv-section">
-        <div class="conv-section-head">
-          <span class="conv-step">02</span>
-          <h2 class="conv-step-label">目标格式</h2>
-        </div>
-        <div class="format-grid" id="format-grid" role="radiogroup" aria-label="选择目标格式">
-          <!-- filled by JS -->
-        </div>
-      </section>
-
-      <!-- Step 3: Backend -->
-      <section class="conv-section">
-        <div class="conv-section-head">
-          <span class="conv-step">03</span>
-          <h2 class="conv-step-label">转换后端</h2>
-          <span class="conv-badge">可自定义</span>
-        </div>
-        <div class="backend-row">
-          <div class="backend-presets" id="backend-presets"></div>
-          <input
-            type="url"
-            id="backend-custom"
-            class="backend-input"
-            placeholder="或输入自定义后端地址…"
-          />
-        </div>
-      </section>
-
-      <!-- Step 4: Options -->
-      <section class="conv-section">
-        <div class="conv-section-head">
-          <span class="conv-step">04</span>
-          <h2 class="conv-step-label">转换选项</h2>
-          <span class="conv-badge">可选</span>
-        </div>
-        <div class="options-grid">
-          <label class="toggle-label" for="opt-emoji">
-            <span class="toggle-text">
-              <span class="toggle-name">Emoji 国旗</span>
-              <span class="toggle-desc">在节点名称中显示国家国旗</span>
-            </span>
-            <input type="checkbox" id="opt-emoji" checked role="switch"/>
-            <span class="toggle-switch"></span>
-          </label>
-          <label class="toggle-label" for="opt-udp">
-            <span class="toggle-text">
-              <span class="toggle-name">启用 UDP</span>
-              <span class="toggle-desc">开启 UDP 转发支持</span>
-            </span>
-            <input type="checkbox" id="opt-udp" checked role="switch"/>
-            <span class="toggle-switch"></span>
-          </label>
-          <label class="toggle-label" for="opt-sort">
-            <span class="toggle-text">
-              <span class="toggle-name">节点排序</span>
-              <span class="toggle-desc">按名称字母顺序排列</span>
-            </span>
-            <input type="checkbox" id="opt-sort" role="switch"/>
-            <span class="toggle-switch"></span>
-          </label>
-          <label class="toggle-label" for="opt-rename">
-            <span class="toggle-text">
-              <span class="toggle-name">去除倍率标注</span>
-              <span class="toggle-desc">移除节点名中的 ×2.0 等倍率信息</span>
-            </span>
-            <input type="checkbox" id="opt-rename" role="switch"/>
-            <span class="toggle-switch"></span>
-          </label>
-        </div>
-
-        <!-- Include / Exclude filter -->
-        <div class="filter-row">
-          <div class="filter-field">
-            <label class="filter-label" for="opt-include">包含关键词</label>
-            <input type="text" id="opt-include" class="filter-input" placeholder="HK|SG|JP（正则）"/>
-          </div>
-          <div class="filter-field">
-            <label class="filter-label" for="opt-exclude">排除关键词</label>
-            <input type="text" id="opt-exclude" class="filter-input" placeholder="剩余|到期|官网（正则）"/>
-          </div>
-        </div>
-      </section>
-
-      <!-- Generate -->
-      <div class="conv-generate">
-        <button class="gen-btn" id="btn-generate" type="button">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2H3v16h5v4l4-4h5l4-4V2z"/><path d="M11 11V7"/><path d="M14 11V7"/></svg>
-          生成订阅链接
-        </button>
-      </div>
-
-      <!-- Result -->
-      <div class="conv-result" id="conv-result" hidden>
-        <div class="result-head">
-          <span class="result-label">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            已生成
-          </span>
-          <div class="result-actions">
-            <button class="small-btn" id="btn-copy-result" type="button">复制链接</button>
-            <button class="small-btn" id="btn-open-result" type="button">在新标签打开</button>
-          </div>
-        </div>
-        <div class="result-url-wrap">
-          <code class="result-url" id="result-url"></code>
-        </div>
-
-        <!-- Import shortcuts -->
-        <div class="import-section">
-          <p class="import-title">一键导入客户端</p>
-          <div class="import-grid" id="import-grid"></div>
-        </div>
-      </div>
-
-      <!-- Error -->
-      <div class="conv-error" id="conv-error" hidden>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
-        <span id="conv-error-msg"></span>
-      </div>
-
-    </div>
-
-    <!-- Tips -->
-    <section class="tips-section anim-fade-up anim-delay-3">
+    <section class="section" aria-label="输入">
       <div class="section-head">
-        <span class="section-num">Tips</span>
-        <h2 class="section-title">使用说明</h2>
+        <span class="section-num">01</span>
+        <h2 class="section-title">输入</h2>
       </div>
-      <div class="tips-grid">
-        <div class="tip-card">
-          <div class="tip-icon">🔗</div>
-          <h3>粘贴订阅链接</h3>
-          <p>将机场提供的订阅 URL 粘贴到输入框中，每行支持一个链接，多条链接会自动合并。</p>
-        </div>
-        <div class="tip-card">
-          <div class="tip-icon">🎯</div>
-          <h3>选择目标格式</h3>
-          <p>根据您使用的客户端选择对应格式。Clash Meta / Mihomo 推荐选 <strong>Clash Meta</strong>，手机端推荐 <strong>Sing-box</strong>。</p>
-        </div>
-        <div class="tip-card">
-          <div class="tip-icon">⚙️</div>
-          <h3>自定义后端</h3>
-          <p>默认使用公共后端。如有自建 Subconverter，填入地址即可。本站不存储任何订阅信息。</p>
-        </div>
-        <div class="tip-card">
-          <div class="tip-icon">🔒</div>
-          <h3>隐私说明</h3>
-          <p>所有转换请求直接从您的浏览器发送至所选后端，本站服务器不参与中转，不记录日志。</p>
-        </div>
+      <div class="input-row">
+        <input id="sub-url" class="text-input" type="url" placeholder="订阅地址 https://…（可留空）" aria-label="订阅地址" />
+        <button id="btn-convert" class="btn" type="button">转换</button>
+      </div>
+      <textarea
+        id="sub-content"
+        class="text-area"
+        placeholder="也可以直接粘贴订阅内容：base64 整包，或者一行一个 ss:// / vmess:// / vless:// / trojan:// 节点链接。"
+        aria-label="订阅内容"
+        spellcheck="false"
+      ></textarea>
+      <div class="btn-row">
+        <button id="btn-sample" class="btn btn-outline" type="button">载入示例</button>
+        <button id="btn-clear" class="btn btn-ghost" type="button">清空</button>
       </div>
     </section>
 
+    <section class="section" aria-label="目标格式">
+      <div class="section-head">
+        <span class="section-num">02</span>
+        <h2 class="section-title">目标格式</h2>
+      </div>
+      <div id="format-group" class="format-group" role="radiogroup" aria-label="目标客户端格式"></div>
+      <p id="format-hint" class="format-hint"></p>
+    </section>
+
+    <section class="section" aria-label="输出">
+      <div class="section-head">
+        <span class="section-num">03</span>
+        <h2 class="section-title">输出</h2>
+      </div>
+      <p id="convert-message" class="copy-status" aria-live="polite"></p>
+      <p id="convert-summary" class="format-hint" hidden></p>
+      <ul id="node-list" class="node-list" hidden></ul>
+      <textarea id="sub-output" class="text-area output-area" readonly placeholder="转换结果会显示在这里。" aria-label="转换结果" spellcheck="false"></textarea>
+      <div class="btn-row">
+        <button id="btn-copy" class="btn" type="button" disabled>复制结果</button>
+        <button id="btn-download" class="btn btn-outline" type="button" disabled>下载</button>
+        <span id="copy-status" class="copy-status" aria-live="polite"></span>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="section-head">
+        <span class="section-num">04</span>
+        <h2 class="section-title">说明</h2>
+      </div>
+      <ul class="notes">
+        {notes.map((note) => (
+          <li class="note">
+            <span class="note-name">{note.name}</span>
+            <p class="note-desc">{note.description}</p>
+          </li>
+        ))}
+      </ul>
+      <div class="site-info">
+        <p id="info-server" hidden></p>
+        <p id="info-visitor">正在检测您的网络信息……</p>
+        <p>本站已稳定运行 <span id="info-uptime">……</span></p>
+      </div>
+    </footer>
   </div>
-</Layout>
 
-<script is:inline>
-(function () {
-  /* ───────────── Config ───────────── */
-  var FORMATS = [
-    { id: 'clash',   label: 'Clash Meta',    sub: 'Mihomo',      icon: '⚡' },
-    { id: 'singbox', label: 'Sing-box',       sub: 'JSON 格式',   icon: '📦', target: 'singbox' },
-    { id: 'v2ray',   label: 'V2Ray',          sub: 'Base64',      icon: '🔷' },
-    { id: 'surge',   label: 'Surge',          sub: 'Surge 4+',    icon: '🌊' },
-    { id: 'quanx',   label: 'Quantumult X',   sub: 'QX',          icon: '🍎', target: 'quanx' },
-    { id: 'loon',    label: 'Loon',           sub: 'Loon',        icon: '🎈' },
-    { id: 'surfboard', label: 'Surfboard',    sub: 'Android',     icon: '🏄', target: 'surfboard' },
-    { id: 'mixed',   label: 'Mixed',          sub: '混合节点',    icon: '🔀' },
-  ];
+  <script>
+    import {
+      FORMATS,
+      formatOf,
+      parseSubscription,
+      renderFormat,
+      sampleSubscription,
+      summaryOf,
+      type FormatId,
+      type ParseResult,
+    } from '../lib/subscribe';
 
-  var BACKENDS = [
-    { label: 'api.v1.mk',   url: 'https://api.v1.mk' },
-    { label: 'sub.xeton.dev', url: 'https://sub.xeton.dev' },
-    { label: 'sublink.dev', url: 'https://sublink.dev/sub' },
-  ];
+    const urlInput = document.getElementById('sub-url') as HTMLInputElement;
+    const contentInput = document.getElementById('sub-content') as HTMLTextAreaElement;
+    const outputArea = document.getElementById('sub-output') as HTMLTextAreaElement;
+    const convertBtn = document.getElementById('btn-convert') as HTMLButtonElement;
+    const sampleBtn = document.getElementById('btn-sample') as HTMLButtonElement;
+    const clearBtn = document.getElementById('btn-clear') as HTMLButtonElement;
+    const copyBtn = document.getElementById('btn-copy') as HTMLButtonElement;
+    const downloadBtn = document.getElementById('btn-download') as HTMLButtonElement;
+    const messageEl = document.getElementById('convert-message') as HTMLParagraphElement;
+    const summaryEl = document.getElementById('convert-summary') as HTMLParagraphElement;
+    const nodeListEl = document.getElementById('node-list') as HTMLUListElement;
+    const formatGroup = document.getElementById('format-group') as HTMLDivElement;
+    const formatHint = document.getElementById('format-hint') as HTMLParagraphElement;
+    const copyStatus = document.getElementById('copy-status') as HTMLSpanElement;
 
-  /* ───────────── State ───────────── */
-  var selectedFormat  = 'clash';
-  var selectedBackend = BACKENDS[0].url;
+    let format: FormatId = 'clash';
+    let parsed: ParseResult | null = null;
 
-  /* ───────────── DOM ───────────── */
-  var subInput      = document.getElementById('sub-input');
-  var formatGrid    = document.getElementById('format-grid');
-  var backendPresets= document.getElementById('backend-presets');
-  var backendCustom = document.getElementById('backend-custom');
-  var btnPaste      = document.getElementById('btn-paste');
-  var btnClear      = document.getElementById('btn-clear');
-  var btnGenerate   = document.getElementById('btn-generate');
-  var convResult    = document.getElementById('conv-result');
-  var convError     = document.getElementById('conv-error');
-  var convErrorMsg  = document.getElementById('conv-error-msg');
-  var resultUrlEl   = document.getElementById('result-url');
-  var btnCopyResult = document.getElementById('btn-copy-result');
-  var btnOpenResult = document.getElementById('btn-open-result');
-  var importGrid    = document.getElementById('import-grid');
-
-  /* ───────────── Render formats ───────────── */
-  FORMATS.forEach(function (f) {
-    var btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'format-btn' + (f.id === selectedFormat ? ' active' : '');
-    btn.dataset.id = f.id;
-    btn.setAttribute('role', 'radio');
-    btn.setAttribute('aria-checked', f.id === selectedFormat ? 'true' : 'false');
-    btn.innerHTML =
-      '<span class="fmt-icon">' + f.icon + '</span>' +
-      '<span class="fmt-label">' + f.label + '</span>' +
-      '<span class="fmt-sub">' + f.sub + '</span>';
-    btn.addEventListener('click', function () {
-      selectedFormat = f.id;
-      formatGrid.querySelectorAll('.format-btn').forEach(function (b) {
-        b.classList.toggle('active', b.dataset.id === f.id);
-        b.setAttribute('aria-checked', b.dataset.id === f.id ? 'true' : 'false');
-      });
-      hideResult();
-    });
-    formatGrid.appendChild(btn);
-  });
-
-  /* ───────────── Render backends ───────────── */
-  BACKENDS.forEach(function (b, i) {
-    var btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'backend-preset' + (i === 0 ? ' active' : '');
-    btn.textContent = b.label;
-    btn.dataset.url = b.url;
-    btn.addEventListener('click', function () {
-      selectedBackend = b.url;
-      backendCustom.value = '';
-      backendPresets.querySelectorAll('.backend-preset').forEach(function (x) {
-        x.classList.toggle('active', x.dataset.url === b.url);
-      });
-    });
-    backendPresets.appendChild(btn);
-  });
-
-  backendCustom.addEventListener('input', function () {
-    if (backendCustom.value.trim()) {
-      selectedBackend = backendCustom.value.trim();
-      backendPresets.querySelectorAll('.backend-preset').forEach(function (x) {
-        x.classList.remove('active');
-      });
-    }
-  });
-
-  /* ───────────── Paste & Clear ───────────── */
-  btnPaste.addEventListener('click', function () {
-    if (!navigator.clipboard) return;
-    navigator.clipboard.readText().then(function (t) { subInput.value += (subInput.value ? '\n' : '') + t.trim(); });
-  });
-
-  btnClear.addEventListener('click', function () {
-    subInput.value = '';
-    hideResult();
-  });
-
-  /* ───────────── Generate ───────────── */
-  btnGenerate.addEventListener('click', function () {
-    var raw = subInput.value.trim();
-    if (!raw) { showError('请先粘贴订阅链接'); return; }
-
-    var urls = raw.split('\n').map(function (l) { return l.trim(); }).filter(Boolean);
-    if (!urls.length) { showError('未检测到有效链接'); return; }
-
-    var backend = (backendCustom.value.trim() || selectedBackend).replace(/\/$/, '');
-
-    // Build target param
-    var fmtMap = { clash:'clash', singbox:'singbox', v2ray:'v2ray', surge:'surge', quanx:'quanx', loon:'loon', surfboard:'surfboard', mixed:'mixed' };
-    var target = fmtMap[selectedFormat] || selectedFormat;
-
-    // Build URL
-    var params = new URLSearchParams();
-    params.set('target', target);
-    params.set('url', urls.join('|'));
-    params.set('emoji', document.getElementById('opt-emoji').checked ? '1' : '0');
-    params.set('udp',   document.getElementById('opt-udp').checked   ? '1' : '0');
-    if (document.getElementById('opt-sort').checked)   params.set('sort', '1');
-    if (document.getElementById('opt-rename').checked) params.set('rename', '!!(\\.?[xX](\\.?\\d+)?)$@');
-    var inc = document.getElementById('opt-include').value.trim();
-    var exc = document.getElementById('opt-exclude').value.trim();
-    if (inc) params.set('include', inc);
-    if (exc) params.set('exclude', exc);
-
-    var finalUrl = backend + '/sub?' + params.toString();
-    showResult(finalUrl);
-  });
-
-  function showResult(url) {
-    convError.hidden = true;
-    resultUrlEl.textContent = url;
-    convResult.hidden = false;
-    buildImportLinks(url);
-    convResult.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }
-
-  function hideResult() {
-    convResult.hidden = true;
-    convError.hidden = true;
-  }
-
-  function showError(msg) {
-    convResult.hidden = true;
-    convErrorMsg.textContent = msg;
-    convError.hidden = false;
-  }
-
-  /* ───────────── Copy & Open ───────────── */
-  btnCopyResult.addEventListener('click', function () {
-    var url = resultUrlEl.textContent;
-    if (!navigator.clipboard) { return; }
-    navigator.clipboard.writeText(url).then(function () {
-      btnCopyResult.textContent = '✓ 已复制';
-      setTimeout(function () { btnCopyResult.textContent = '复制链接'; }, 2000);
-    });
-  });
-
-  btnOpenResult.addEventListener('click', function () {
-    window.open(resultUrlEl.textContent, '_blank', 'noopener');
-  });
-
-  /* ───────────── Import shortcuts ───────────── */
-  function buildImportLinks(url) {
-    var enc = encodeURIComponent(url);
-    var schemes = [];
-
-    if (selectedFormat === 'clash') {
-      schemes.push({ label: 'Clash Verge / Meta', href: 'clash://install-config?url=' + enc + '&name=b1000mk-sub', icon: '⚡' });
-      schemes.push({ label: 'ClashX Pro', href: 'clash://install-config?url=' + enc, icon: '⚡' });
-    }
-    if (selectedFormat === 'singbox') {
-      schemes.push({ label: 'Sing-box', href: 'sing-box://import-remote-profile?url=' + enc, icon: '📦' });
-    }
-    if (selectedFormat === 'quanx') {
-      schemes.push({ label: 'Quantumult X', href: 'quantumult-x:///add-resource?remote-resource=' + enc, icon: '🍎' });
-    }
-    if (selectedFormat === 'loon') {
-      schemes.push({ label: 'Loon', href: 'loon://import?sub=' + enc, icon: '🎈' });
-    }
-    if (selectedFormat === 'surge') {
-      schemes.push({ label: 'Surge', href: 'surge:///install-config?url=' + enc, icon: '🌊' });
-    }
-    // Universal copy
-    schemes.push({ label: '复制到剪贴板', href: null, icon: '📋', copy: url });
-
-    importGrid.innerHTML = '';
-    schemes.forEach(function (s) {
-      var a;
-      if (s.href) {
-        a = document.createElement('a');
-        a.href = s.href;
-        a.target = '_blank';
-        a.rel = 'noopener noreferrer';
+    function refreshOutput() {
+      const output = parsed ? renderFormat(parsed, format) : '';
+      outputArea.value = output;
+      copyBtn.disabled = !output;
+      downloadBtn.disabled = !output;
+      const active = formatOf(format);
+      formatHint.textContent = active.hint;
+      downloadBtn.textContent = '下载 ' + active.file;
+      if (parsed && parsed.nodes.length > 0) {
+        summaryEl.textContent = summaryOf(parsed);
+        summaryEl.hidden = false;
+        nodeListEl.innerHTML = '';
+        for (const node of parsed.nodes) {
+          const li = document.createElement('li');
+          const name = document.createElement('span');
+          name.className = 'node-name';
+          name.textContent = node.name;
+          const meta = document.createElement('span');
+          meta.className = 'node-meta';
+          meta.textContent = node.type + ' · ' + (node.network ?? 'tcp');
+          li.append(name, meta);
+          nodeListEl.appendChild(li);
+        }
+        nodeListEl.hidden = false;
       } else {
-        a = document.createElement('button');
-        a.type = 'button';
-        a.addEventListener('click', function () {
-          if (navigator.clipboard) navigator.clipboard.writeText(s.copy).then(function () {
-            a.querySelector('.import-label').textContent = '✓ 已复制';
-            setTimeout(function () { a.querySelector('.import-label').textContent = '复制到剪贴板'; }, 2000);
-          });
-        });
+        summaryEl.hidden = true;
+        nodeListEl.hidden = true;
       }
-      a.className = 'import-btn';
-      a.innerHTML = '<span class="import-icon">' + s.icon + '</span><span class="import-label">' + s.label + '</span>';
-      importGrid.appendChild(a);
+    }
+
+    for (const f of FORMATS) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'format-btn';
+      btn.setAttribute('role', 'radio');
+      btn.textContent = f.label;
+      btn.addEventListener('click', () => {
+        format = f.id;
+        for (const el of formatGroup.querySelectorAll('.format-btn')) {
+          el.setAttribute('aria-checked', String(el === btn));
+        }
+        refreshOutput();
+      });
+      btn.setAttribute('aria-checked', String(f.id === format));
+      formatGroup.appendChild(btn);
+    }
+    refreshOutput();
+
+    async function convert() {
+      const target = urlInput.value.trim();
+      let text = contentInput.value;
+      if (target) {
+        convertBtn.disabled = true;
+        convertBtn.textContent = '正在读取';
+        messageEl.textContent = '正在读取订阅地址……';
+        try {
+          const res = await fetch(target, { credentials: 'omit' });
+          if (!res.ok) throw new Error(String(res.status));
+          text = await res.text();
+          contentInput.value = text;
+        } catch {
+          convertBtn.disabled = false;
+          convertBtn.textContent = '转换';
+          parsed = null;
+          refreshOutput();
+          messageEl.textContent = '这个订阅地址无法在浏览器里直接读取（通常是服务端没有开放跨域访问）。请在浏览器打开该地址，把页面内容复制到下方文本框，再点一次转换。';
+          return;
+        }
+        convertBtn.disabled = false;
+        convertBtn.textContent = '转换';
+      }
+      const result = parseSubscription(text);
+      parsed = result;
+      refreshOutput();
+      if (!result.nodes.length && !result.unknown.length) {
+        messageEl.textContent = '没有读到可解析的内容。请粘贴订阅地址返回的文本，或者一行一个节点链接。';
+        return;
+      }
+      messageEl.textContent = '';
+    }
+
+    convertBtn.addEventListener('click', convert);
+
+    sampleBtn.addEventListener('click', () => {
+      const sample = sampleSubscription();
+      contentInput.value = sample;
+      parsed = parseSubscription(sample);
+      messageEl.textContent = '';
+      refreshOutput();
     });
-  }
-})();
-</script>
 
-<style>
-/* ── Page nav ── */
-.topnav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 32px 0 0;
-}
-.back-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 14px;
-  color: var(--fg-muted);
-  text-decoration: none;
-  transition: color 0.2s;
-}
-.back-link:hover { color: var(--blue); }
-.topnav-title {
-  font-family: var(--font-display);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--fg-subtle);
-}
+    clearBtn.addEventListener('click', () => {
+      urlInput.value = '';
+      contentInput.value = '';
+      parsed = null;
+      messageEl.textContent = '';
+      refreshOutput();
+    });
 
-/* ── Convert Hero ── */
-.convert-hero {
-  padding: 56px 0 40px;
-}
-.convert-title {
-  margin: 16px 0 0;
-  font-family: var(--font-display);
-  font-size: clamp(40px, 8vw, 80px);
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: -0.03em;
-  background: var(--grad-text);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.convert-desc {
-  margin: 20px 0 0;
-  font-size: 15px;
-  line-height: 1.8;
-  color: var(--fg-muted);
-}
+    copyBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(outputArea.value);
+        copyBtn.textContent = '已复制';
+        window.setTimeout(() => { copyBtn.textContent = '复制结果'; }, 2500);
+      } catch {
+        copyStatus.textContent = '无法自动复制，请在结果框里全选复制。';
+      }
+    });
 
-/* ── Converter Wrap ── */
-.converter-wrap {
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  background: var(--surface);
-  backdrop-filter: blur(16px);
-  overflow: hidden;
-  margin-bottom: 72px;
-}
+    downloadBtn.addEventListener('click', () => {
+      const blob = new Blob([outputArea.value], { type: 'text/plain;charset=utf-8' });
+      const href = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = href;
+      a.download = formatOf(format).file;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(href);
+    });
+  </script>
 
-/* ── Conv Section ── */
-.conv-section {
-  padding: 28px 32px;
-  border-bottom: 1px solid var(--border);
-}
-.conv-section-head {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 18px;
-}
-.conv-step {
-  font-family: var(--font-display);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  color: var(--blue);
-  opacity: 0.7;
-}
-.conv-step-label {
-  font-family: var(--font-display);
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--fg);
-}
-.conv-badge {
-  font-size: 11px;
-  color: var(--fg-subtle);
-  background: rgba(255,255,255,0.05);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 2px 10px;
-}
+  <script is:inline>
+    (function () {
+      // 站点稳定运行的起始时间（第 5 天起算；如需调整只改这里）
+      var START = new Date('2026-10-04T11:56:00+08:00');
+      var up = document.getElementById('info-uptime');
+      var serverEl = document.getElementById('info-server');
+      var visitorEl = document.getElementById('info-visitor');
 
-/* ── Textarea ── */
-.sub-textarea {
-  width: 100%;
-  padding: 14px 16px;
-  background: rgba(0,0,0,0.25);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  color: var(--fg);
-  font-family: "JetBrains Mono", "Fira Code", monospace;
-  font-size: 13px;
-  line-height: 1.6;
-  resize: vertical;
-  outline: none;
-  transition: border-color 0.2s;
-}
-.sub-textarea:focus { border-color: var(--blue); }
-.sub-textarea::placeholder { color: var(--fg-subtle); }
+      function flag(cc) {
+        cc = (cc || '').trim().toUpperCase();
+        if (!/^[A-Z]{2}$/.test(cc)) return '';
+        return String.fromCodePoint.apply(null, cc.split('').map(function (c) {
+          return 0x1f1e6 + c.charCodeAt(0) - 65;
+        }));
+      }
 
-.input-actions {
-  display: flex;
-  gap: 8px;
-  margin-top: 10px;
-}
+      function tick() {
+        if (!up) return;
+        var diff = Math.max(0, Date.now() - START.getTime());
+        var d = Math.floor(diff / 86400000);
+        var h = Math.floor(diff / 3600000) % 24;
+        var m = Math.floor(diff / 60000) % 60;
+        var s = Math.floor(diff / 1000) % 60;
+        up.textContent = d + '天 ' + h + '小时 ' + m + '分 ' + s + '秒';
+      }
+      tick();
+      window.setInterval(tick, 1000);
 
-/* ── Small btn ── */
-.small-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  font-size: 13px;
-  font-weight: 500;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: transparent;
-  color: var(--fg-muted);
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.small-btn:hover {
-  border-color: var(--border-hover);
-  color: var(--blue);
-  background: var(--blue-dim);
-}
-.small-btn.danger:hover {
-  border-color: rgba(248,113,113,0.35);
-  color: #f87171;
-  background: rgba(248,113,113,0.1);
-}
+      var coloCities = {
+        HKG: 'Hong Kong', NRT: 'Tokyo', KIX: 'Osaka', ICN: 'Seoul', SIN: 'Singapore', TPE: 'Taipei',
+        LAX: 'Los Angeles', SJC: 'San Jose', SFO: 'San Francisco', SEA: 'Seattle', DFW: 'Dallas',
+        ORD: 'Chicago', IAD: 'Ashburn', JFK: 'New York', YYZ: 'Toronto', GRU: 'São Paulo',
+        FRA: 'Frankfurt', AMS: 'Amsterdam', LHR: 'London', CDG: 'Paris', MXP: 'Milan', MAD: 'Madrid'
+      };
 
-/* ── Format grid ── */
-.format-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-  gap: 10px;
-}
-.format-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
-  padding: 14px 16px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: rgba(0,0,0,0.2);
-  cursor: pointer;
-  transition: all 0.2s var(--ease-out);
-  text-align: left;
-}
-.format-btn:hover {
-  border-color: var(--border-hover);
-  background: var(--blue-dim);
-}
-.format-btn.active {
-  border-color: var(--blue);
-  background: rgba(96,165,250,0.12);
-  box-shadow: 0 0 0 1px rgba(96,165,250,0.2);
-}
-.fmt-icon { font-size: 18px; }
-.fmt-label {
-  font-family: var(--font-display);
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--fg);
-}
-.format-btn.active .fmt-label { color: var(--blue); }
-.fmt-sub { font-size: 11px; color: var(--fg-subtle); }
+      fetch('/cdn-cgi/trace').then(function (r) { return r.text(); }).then(function (text) {
+        var info = {};
+        text.trim().split('\n').forEach(function (line) {
+          var kv = line.split('=');
+          info[kv[0]] = kv.slice(1).join('=');
+        });
+        if (serverEl && info.ip) {
+          serverEl.textContent = '现在为您提供服务的服务器是 ' + flag(info.loc) + ' ' + (coloCities[info.colo] || info.colo || '') + '，IP: ' + info.ip + '，运营商: Cloudflare, Inc.';
+          serverEl.hidden = false;
+        }
+      }).catch(function () {});
 
-/* ── Backend ── */
-.backend-row {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.backend-presets {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.backend-preset {
-  padding: 7px 16px;
-  font-size: 13px;
-  font-family: var(--font-display);
-  font-weight: 500;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: transparent;
-  color: var(--fg-muted);
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.backend-preset:hover, .backend-preset.active {
-  border-color: var(--border-hover);
-  background: var(--blue-dim);
-  color: var(--blue);
-}
-.backend-input {
-  width: 100%;
-  padding: 10px 14px;
-  background: rgba(0,0,0,0.2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  color: var(--fg);
-  font-size: 13px;
-  outline: none;
-  transition: border-color 0.2s;
-}
-.backend-input:focus { border-color: var(--blue); }
-.backend-input::placeholder { color: var(--fg-subtle); }
-
-/* ── Options ── */
-.options-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 8px;
-  margin-bottom: 16px;
-}
-.toggle-label {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: rgba(0,0,0,0.15);
-  cursor: pointer;
-  transition: border-color 0.2s;
-  user-select: none;
-}
-.toggle-label:hover { border-color: var(--border-hover); }
-.toggle-text { flex: 1; }
-.toggle-name { display: block; font-size: 13px; font-weight: 600; color: var(--fg); }
-.toggle-desc { display: block; font-size: 11px; color: var(--fg-subtle); margin-top: 2px; }
-.toggle-label input[type="checkbox"] { display: none; }
-.toggle-switch {
-  flex-shrink: 0;
-  width: 36px;
-  height: 20px;
-  border-radius: 999px;
-  background: var(--border);
-  border: 1px solid var(--border);
-  position: relative;
-  transition: background 0.2s;
-}
-.toggle-switch::after {
-  content: '';
-  position: absolute;
-  top: 2px; left: 2px;
-  width: 14px; height: 14px;
-  border-radius: 50%;
-  background: var(--fg-muted);
-  transition: transform 0.2s var(--ease-spring), background 0.2s;
-}
-.toggle-label input:checked ~ .toggle-switch { background: var(--blue); border-color: var(--blue); }
-.toggle-label input:checked ~ .toggle-switch::after { transform: translateX(16px); background: white; }
-
-.filter-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-.filter-field { display: flex; flex-direction: column; gap: 6px; }
-.filter-label { font-size: 12px; font-weight: 600; color: var(--fg-muted); }
-.filter-input {
-  padding: 9px 13px;
-  background: rgba(0,0,0,0.2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  color: var(--fg);
-  font-size: 13px;
-  outline: none;
-  transition: border-color 0.2s;
-}
-.filter-input:focus { border-color: var(--blue); }
-.filter-input::placeholder { color: var(--fg-subtle); }
-
-/* ── Generate button ── */
-.conv-generate {
-  padding: 24px 32px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  justify-content: center;
-}
-.gen-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px 36px;
-  border: 1px solid rgba(96,165,250,0.4);
-  border-radius: var(--radius);
-  background: linear-gradient(135deg, rgba(96,165,250,0.18), rgba(129,140,248,0.12));
-  color: var(--blue);
-  font-family: var(--font-display);
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.25s var(--ease-out);
-  letter-spacing: 0.01em;
-}
-.gen-btn:hover {
-  border-color: rgba(96,165,250,0.7);
-  background: linear-gradient(135deg, rgba(96,165,250,0.28), rgba(129,140,248,0.2));
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(96,165,250,0.2);
-}
-.gen-btn:active { transform: translateY(0); }
-
-/* ── Result ── */
-.conv-result {
-  padding: 24px 32px;
-  border-bottom: 1px solid var(--border);
-}
-.result-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 14px;
-}
-.result-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #4ade80;
-}
-.result-actions { display: flex; gap: 8px; }
-.result-url-wrap {
-  padding: 14px 16px;
-  background: rgba(0,0,0,0.35);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow-x: auto;
-}
-.result-url {
-  font-family: "JetBrains Mono", "Fira Code", monospace;
-  font-size: 12px;
-  color: var(--blue);
-  word-break: break-all;
-  white-space: pre-wrap;
-}
-
-/* ── Import shortcuts ── */
-.import-section { margin-top: 20px; }
-.import-title { font-size: 12px; font-weight: 600; color: var(--fg-subtle); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.06em; }
-.import-grid { display: flex; flex-wrap: wrap; gap: 8px; }
-.import-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: var(--surface);
-  color: var(--fg-muted);
-  font-size: 13px;
-  text-decoration: none;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.import-btn:hover {
-  border-color: var(--border-hover);
-  background: var(--blue-dim);
-  color: var(--blue);
-}
-.import-icon { font-size: 15px; }
-
-/* ── Error ── */
-.conv-error {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 16px 32px;
-  color: #f87171;
-  font-size: 14px;
-  border-bottom: 1px solid var(--border);
-}
-
-/* ── Tips ── */
-.tips-section { padding-top: 0; border-top: none; }
-.tips-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  gap: 14px;
-}
-.tip-card {
-  padding: 22px 22px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--surface);
-  transition: border-color 0.25s;
-}
-.tip-card:hover { border-color: var(--border-hover); }
-.tip-icon { font-size: 22px; margin-bottom: 12px; }
-.tip-card h3 { font-family: var(--font-display); font-size: 15px; font-weight: 600; color: var(--fg); margin-bottom: 8px; }
-.tip-card p { font-size: 13px; color: var(--fg-muted); line-height: 1.7; }
-.tip-card strong { color: var(--fg); font-weight: 600; }
-
-/* ── Responsive ── */
-@media (max-width: 640px) {
-  .conv-section { padding: 22px 20px; }
-  .conv-generate { padding: 20px; }
-  .conv-result { padding: 20px; }
-  .conv-error { padding: 14px 20px; }
-  .format-grid { grid-template-columns: repeat(2, 1fr); }
-  .options-grid { grid-template-columns: 1fr; }
-  .filter-row { grid-template-columns: 1fr; }
-}
-</style>
+      fetch('https://ipwho.is/').then(function (r) { return r.json(); }).then(function (data) {
+        if (!data || data.success === false || !data.ip || !visitorEl) return;
+        var isp = data.connection && data.connection.isp ? '，运营商: ' + data.connection.isp : '';
+        visitorEl.textContent = '您来自 ' + flag(data.country_code) + ' ' + (data.city || '') + '，IP: ' + data.ip + isp;
+      }).catch(function () {});
+    })();
+  </script>
+</Layout>

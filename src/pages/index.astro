@@ -45,80 +45,73 @@ const principles = [
   description="探索 b1000mk 的 cfnew 面板、my-homepage 与 GithubCK 开源作品，关注 Cloudflare 边缘计算与自动化。"
 >
   <div class="page">
-
-    <!-- ① Hero -->
     <header class="hero">
-      <p class="eyebrow anim-fade-up">b1000mk</p>
-      <h1 class="editorial-title anim-fade-up anim-delay-1">路漫漫其修远</h1>
-      <p class="hero-sub anim-fade-up anim-delay-2">吾将上下而求索</p>
-      <p class="hero-intro anim-fade-up anim-delay-3">
-        边缘计算、Cloudflare 全球网络、自动化流程与极简高表现 Web 界面设计。
-      </p>
-      <div class="hero-actions anim-fade-up anim-delay-4">
-        <a class="btn" href={profile} target="_blank" rel="noopener noreferrer">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.09.68-.22.68-.49 0-.24-.01-.88-.01-1.72-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.49-1.11-1.49-.91-.64.07-.62.07-.62 1 .07 1.53 1.05 1.53 1.05.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05a9.3 9.3 0 0 1 2.5-.35c.85 0 1.71.12 2.5.35 1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.81-4.57 5.06.36.32.68.94.68 1.9 0 1.37-.01 2.48-.01 2.82 0 .27.18.59.69.49A10.06 10.06 0 0 0 22 12.25C22 6.58 17.52 2 12 2Z"/>
-          </svg>
-          GitHub 主页
-        </a>
-        <a class="hero-link" href={profile} target="_blank" rel="noopener noreferrer">
-          https://github.com/b1000mk
-        </a>
+      <div class="hero-top">
+        <p class="eyebrow">b1000mk</p>
+        <nav class="site-nav" aria-label="主导航">
+          <a href="/" aria-current="page">首页</a>
+          <a href="/convert">订阅转换</a>
+        </nav>
+      </div>
+      <h1 class="editorial-title">路漫漫其修远</h1>
+      <p class="hero-sub">吾将上下而求索</p>
+      <p class="hero-intro">边缘计算、Cloudflare 全球网络、自动化流程与极简高表现 Web 界面设计。</p>
+      <div class="hero-actions">
+        <a class="btn" href={profile} target="_blank" rel="noopener noreferrer">GitHub 主页</a>
+        <a class="hero-link" href={profile} target="_blank" rel="noopener noreferrer">https://github.com/b1000mk</a>
       </div>
     </header>
 
-    <!-- ② Projects -->
     <section class="section" aria-label="开源项目">
-      <div class="section-head anim-fade-up">
+      <div class="section-head">
         <span class="section-num">01</span>
         <h2 class="section-title">项目</h2>
       </div>
 
-      <div class="projects-grid">
-        {projects.map((project, i) => (
-          <article class={`project anim-fade-up anim-delay-${i + 1}`}>
-            <span class="project-num">0{i + 1}</span>
-            <div class="project-body">
-              <h3 class="project-title">{project.name}</h3>
-              <p class="project-desc">{project.description}</p>
-              <a
-                class="repo-link"
-                href={`https://github.com/b1000mk/${project.repo}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/>
-                  <path d="M9 18c-4.51 2-5-2-7-2"/>
-                </svg>
-                github.com/b1000mk/{project.repo}
-              </a>
-            </div>
-          </article>
-        ))}
-      </div>
+      {projects.map((project, i) => (
+        <article class="project">
+          <span class="project-num">0{i + 1}</span>
+          <div class="project-body">
+            <h3 class="project-title">{project.name}</h3>
+            <p class="project-desc">{project.description}</p>
+            <a
+              class="repo-link"
+              href={`https://github.com/b1000mk/${project.repo}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span>github.com/b1000mk/{project.repo}</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M7 17 17 7" />
+                <path d="M7 7h10v10" />
+              </svg>
+            </a>
+          </div>
+        </article>
+      ))}
     </section>
 
-    <!-- ③ Tools -->
     <section class="section" aria-label="技术与工具栈">
-      <div class="section-head anim-fade-up">
+      <div class="section-head">
         <span class="section-num">02</span>
         <h2 class="section-title">工具</h2>
       </div>
-      <ul class="tools anim-fade-up anim-delay-1">
+      <ul class="tools">
         {tools.map((tool) => <li>{tool}</li>)}
       </ul>
+      <p class="tools-note">
+        在线小工具：<a class="tools-link" href="/convert">订阅链接转换</a> —— 把订阅地址或订阅内容转成 Clash、V2Ray、Surge、Quantumult X 可以直接导入的配置。
+      </p>
     </section>
 
-    <!-- ④ Principles -->
     <section class="section" aria-label="设计与构建哲学">
-      <div class="section-head anim-fade-up">
+      <div class="section-head">
         <span class="section-num">03</span>
         <h2 class="section-title">理念</h2>
       </div>
       <ol class="principles">
         {principles.map((principle, i) => (
-          <li class={`principle anim-fade-up anim-delay-${i + 1}`}>
+          <li class="principle">
             <span class="principle-num">{i + 1}</span>
             <p><strong>{principle.name}</strong> — {principle.description}</p>
           </li>
@@ -126,116 +119,77 @@ const principles = [
       </ol>
     </section>
 
-    <!-- ⑤ Tools -->
-    <section class="section" aria-label="在线工具">
-      <div class="section-head anim-fade-up">
-        <span class="section-num">05</span>
-        <h2 class="section-title">工具</h2>
-      </div>
-      <div class="tools-featured anim-fade-up anim-delay-1">
-        <a class="tool-card" href="/convert">
-          <div class="tool-card-icon">🔄</div>
-          <div class="tool-card-body">
-            <h3 class="tool-card-title">订阅转换</h3>
-            <p class="tool-card-desc">将机场订阅链接转换为 Clash Meta、Sing-box、Surge、Quantumult X 等格式，支持节点过滤与选项自定义。</p>
-            <span class="tool-card-arrow">
-              打开工具
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-            </span>
-          </div>
-          <div class="tool-card-tags">
-            <span>Clash Meta</span><span>Sing-box</span><span>V2Ray</span><span>Surge</span>
-          </div>
-        </a>
-      </div>
-    </section>
-
-    <!-- ⑥ Contact -->
     <footer class="footer">
-      <div class="section-head anim-fade-up">
-        <span class="section-num">06</span>
+      <div class="section-head">
+        <span class="section-num">04</span>
         <h2 class="section-title">联系</h2>
       </div>
-
-      <div class="footer-actions anim-fade-up anim-delay-1">
+      <div class="footer-actions">
         <a class="btn" href={profile} target="_blank" rel="noopener noreferrer">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.09.68-.22.68-.49 0-.24-.01-.88-.01-1.72-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.49-1.11-1.49-.91-.64.07-.62.07-.62 1 .07 1.53 1.05 1.53 1.05.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05a9.3 9.3 0 0 1 2.5-.35c.85 0 1.71.12 2.5.35 1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.81-4.57 5.06.36.32.68.94.68 1.9 0 1.37-.01 2.48-.01 2.82 0 .27.18.59.69.49A10.06 10.06 0 0 0 22 12.25C22 6.58 17.52 2 12 2Z"/>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.09.68-.22.68-.49 0-.24-.01-.88-.01-1.72-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.49-1.11-1.49-.91-.64.07-.62.07-.62 1 .07 1.53 1.05 1.53 1.05.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05a9.3 9.3 0 0 1 2.5-.35c.85 0 1.71.12 2.5.35 1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.81-4.57 5.06.36.32.68.94.68 1.9 0 1.37-.01 2.48-.01 2.82 0 .27.18.59.69.49A10.06 10.06 0 0 0 22 12.25C22 6.58 17.52 2 12 2Z" />
           </svg>
           在 GitHub 上联系
         </a>
         <div class="copy-row">
-          <a class="hero-link" href={profile} target="_blank" rel="noopener noreferrer">
-            github.com/b1000mk
-          </a>
-          <button id="copy-profile" class="icon-btn" type="button" aria-label="复制个人资料链接" title="复制链接">
-            <svg class="icon-copy" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
-              <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+          <a class="hero-link" href={profile} target="_blank" rel="noopener noreferrer">github.com/b1000mk</a>
+          <button id="copy-profile" class="icon-btn" type="button" aria-label="复制个人资料链接" title="复制个人资料链接">
+            <svg class="icon-copy" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+              <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
             </svg>
-            <svg class="icon-check" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M20 6 9 17l-5-5"/>
+            <svg class="icon-check" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M20 6 9 17l-5-5" />
             </svg>
           </button>
         </div>
       </div>
       <p id="copy-status" class="copy-status" aria-live="polite"></p>
-
-      <!-- Site Status Card -->
-      <div class="site-info anim-fade-up anim-delay-2">
-        <div class="site-info-row">
-          <span class="site-info-label">运行</span>
-          <span class="site-info-value">
-            <span class="uptime-badge">
-              <span class="uptime-dot"></span>
-              <span id="info-uptime">——</span>
-            </span>
-          </span>
-        </div>
-        <div class="site-info-divider"></div>
-        <div class="site-info-row" id="row-server" style="display:none">
-          <span class="site-info-label">节点</span>
-          <span class="site-info-value" id="info-server"></span>
-        </div>
-        <div class="site-info-row">
-          <span class="site-info-label">访客</span>
-          <span class="site-info-value" id="info-visitor">检测中…</span>
-        </div>
+      <div class="site-info">
+        <p id="info-server" hidden></p>
+        <p id="info-visitor">正在检测您的网络信息……</p>
+        <p>本站已稳定运行 <span id="info-uptime">……</span></p>
       </div>
     </footer>
-
   </div>
 
-  <!-- Copy script -->
   <script is:inline>
     (function () {
       var btn = document.getElementById('copy-profile');
       var status = document.getElementById('copy-status');
       if (!btn || !status) return;
       var url = 'https://github.com/b1000mk';
+
       btn.addEventListener('click', function () {
-        if (!navigator.clipboard) { status.textContent = '请手动复制上方链接'; return; }
-        navigator.clipboard.writeText(url).then(function () {
-          status.textContent = '✓ 已复制链接';
-          btn.setAttribute('data-state', 'copied');
-          setTimeout(function () { status.textContent = ''; btn.removeAttribute('data-state'); }, 2500);
-        }, function () { status.textContent = '请手动复制上方链接'; });
+        if (!navigator.clipboard) {
+          status.textContent = '无法自动复制，请长按上方链接复制。';
+          return;
+        }
+        navigator.clipboard.writeText(url).then(
+          function () {
+            status.textContent = '已复制链接';
+            btn.setAttribute('data-state', 'copied');
+            window.setTimeout(function () {
+              status.textContent = '';
+              btn.removeAttribute('data-state');
+            }, 2500);
+          },
+          function () {
+            status.textContent = '无法自动复制，请长按上方链接复制。';
+          }
+        );
       });
     })();
   </script>
 
-  <!-- Uptime + Network script -->
   <script is:inline>
     (function () {
-      // ★ 运行时间起点 — 固定日期，随时间持续增长（如需修改只改这里）
-      var START = new Date('2026-10-04T12:30:00+08:00');
-
-      var upEl      = document.getElementById('info-uptime');
-      var serverEl  = document.getElementById('info-server');
-      var rowServer = document.getElementById('row-server');
+      // 站点稳定运行的起始时间（第 5 天起算；如需调整只改这里）
+      var START = new Date('2026-10-04T11:56:00+08:00');
+      var up = document.getElementById('info-uptime');
+      var serverEl = document.getElementById('info-server');
       var visitorEl = document.getElementById('info-visitor');
 
-      // 国旗 emoji
       function flag(cc) {
         cc = (cc || '').trim().toUpperCase();
         if (!/^[A-Z]{2}$/.test(cc)) return '';
@@ -244,45 +198,44 @@ const principles = [
         }));
       }
 
-      // 倒计时
       function tick() {
-        if (!upEl) return;
+        if (!up) return;
         var diff = Math.max(0, Date.now() - START.getTime());
         var d = Math.floor(diff / 86400000);
         var h = Math.floor(diff / 3600000) % 24;
         var m = Math.floor(diff / 60000) % 60;
         var s = Math.floor(diff / 1000) % 60;
-        upEl.textContent = d + ' 天 ' + h + ' 小时 ' + m + ' 分 ' + s + ' 秒';
+        up.textContent = d + '天 ' + h + '小时 ' + m + '分 ' + s + '秒';
       }
       tick();
-      setInterval(tick, 1000);
+      window.setInterval(tick, 1000);
 
       var coloCities = {
-        HKG:'Hong Kong', NRT:'Tokyo', KIX:'Osaka', ICN:'Seoul', SIN:'Singapore', TPE:'Taipei',
-        LAX:'Los Angeles', SJC:'San Jose', SFO:'San Francisco', SEA:'Seattle', DFW:'Dallas',
-        ORD:'Chicago', IAD:'Ashburn', JFK:'New York', YYZ:'Toronto', GRU:'São Paulo',
-        FRA:'Frankfurt', AMS:'Amsterdam', LHR:'London', CDG:'Paris', MXP:'Milan', MAD:'Madrid'
+        HKG: 'Hong Kong', NRT: 'Tokyo', KIX: 'Osaka', ICN: 'Seoul', SIN: 'Singapore', TPE: 'Taipei',
+        LAX: 'Los Angeles', SJC: 'San Jose', SFO: 'San Francisco', SEA: 'Seattle', DFW: 'Dallas',
+        ORD: 'Chicago', IAD: 'Ashburn', JFK: 'New York', YYZ: 'Toronto', GRU: 'São Paulo',
+        FRA: 'Frankfurt', AMS: 'Amsterdam', LHR: 'London', CDG: 'Paris', MXP: 'Milan', MAD: 'Madrid'
       };
 
-      // CF 边缘节点
+      // 服务器信息：Cloudflare 托管的域名自带 /cdn-cgi/trace
       fetch('/cdn-cgi/trace').then(function (r) { return r.text(); }).then(function (text) {
         var info = {};
         text.trim().split('\n').forEach(function (line) {
-          var kv = line.split('='); info[kv[0]] = kv.slice(1).join('=');
+          var kv = line.split('=');
+          info[kv[0]] = kv.slice(1).join('=');
         });
-        if (serverEl && info.colo) {
-          var city = coloCities[info.colo] || info.colo;
-          serverEl.textContent = flag(info.loc) + ' ' + city + ' · Cloudflare';
-          rowServer.style.display = '';
+        if (serverEl && info.ip) {
+          serverEl.textContent = '现在为您提供服务的服务器是 ' + flag(info.loc) + ' ' + (coloCities[info.colo] || info.colo || '') + '，IP: ' + info.ip + '，运营商: Cloudflare, Inc.';
+          serverEl.hidden = false;
         }
       }).catch(function () {});
 
       // 访客信息
       fetch('https://ipwho.is/').then(function (r) { return r.json(); }).then(function (data) {
         if (!data || data.success === false || !data.ip || !visitorEl) return;
-        var isp = data.connection && data.connection.isp ? ' · ' + data.connection.isp : '';
-        visitorEl.textContent = flag(data.country_code) + ' ' + (data.city || '') + ' · ' + data.ip + isp;
-      }).catch(function () { if (visitorEl) visitorEl.textContent = '无法获取'; });
+        var isp = data.connection && data.connection.isp ? '，运营商: ' + data.connection.isp : '';
+        visitorEl.textContent = '您来自 ' + flag(data.country_code) + ' ' + (data.city || '') + '，IP: ' + data.ip + isp;
+      }).catch(function () {});
     })();
   </script>
 </Layout>
